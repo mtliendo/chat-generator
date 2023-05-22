@@ -356,4 +356,6 @@ Trying again. Failed.
 
 Ahh...codewhisperer again. Just noticed it put `GetParameters` instead of `GetParameter`.
 
-Trying again.
+Trying again. It worked!...Kinda.
+
+It timed out. I'm gonna have it write a shorter story.
