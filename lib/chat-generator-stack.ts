@@ -1,16 +1,72 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as cdk from 'aws-cdk-lib'
+import { CfnOutput } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
+import { createPublishToAppSyncFunc } from './functions/publishToAppSync/construct'
+import { createTable } from './databases/tables'
+import {
+	FilterCriteria,
+	FilterRule,
+	StartingPosition,
+} from 'aws-cdk-lib/aws-lambda'
+import { createAPI } from './api/appsync'
+import { createAuth } from './cognito/auth'
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources'
 
 export class ChatGeneratorStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+		super(scope, id, props)
 
-    // The code that defines your stack goes here
+		const AIStoryTable = createTable(this, {
+			tableName: 'AIStoryTable',
+		})
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'ChatGeneratorQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
-  }
+		const AIStoryAuth = createAuth(this, {
+			appName: 'AIStoryAuth',
+		})
+
+		const appsyncAPI = createAPI(this, {
+			appName: 'createAIStoryAPI',
+
+			storyDB: AIStoryTable,
+			userpool: AIStoryAuth.userPool,
+			unauthenticatedRole: AIStoryAuth.identityPool.unauthenticatedRole,
+		})
+
+		const publishToAppSyncFunc = createPublishToAppSyncFunc(this, {
+			appSyncARN: appsyncAPI.arn,
+			appSyncURL: appsyncAPI.graphqlUrl,
+		})
+
+		publishToAppSyncFunc.addEventSource(
+			new eventsources.DynamoEventSource(AIStoryTable, {
+				startingPosition: StartingPosition.LATEST,
+				filters: [
+					FilterCriteria.filter({
+						eventName: FilterRule.isEqual('INSERT'),
+					}),
+				],
+			})
+		)
+		AIStoryTable.grantStreamRead(publishToAppSyncFunc)
+		appsyncAPI.grantMutation(publishToAppSyncFunc, 'publish')
+
+		new CfnOutput(this, 'cognitoUserPoolId', {
+			value: AIStoryAuth.userPool.userPoolId,
+		})
+		new CfnOutput(this, 'idenititypoolId', {
+			value: AIStoryAuth.identityPool.identityPoolId,
+		})
+
+		new CfnOutput(this, 'cognitoUserPoolClientId', {
+			value: AIStoryAuth.userPoolClient.userPoolClientId,
+		})
+
+		new CfnOutput(this, 'region', {
+			value: this.region,
+		})
+
+		new CfnOutput(this, 'AppSyncURL', {
+			value: appsyncAPI.graphqlUrl,
+		})
+	}
 }
