@@ -12,11 +12,14 @@ export function request(
 		key: util.dynamodb.toMapValues({ id }),
 		update: {
 			expression:
-				'set updatedAt = :updatedAt, isComplete = :isComplete, text = :text',
+				'set updatedAt = :updatedAt, isComplete = :isComplete, #txt = :text',
 			expressionValues: {
 				':updatedAt': { S: util.time.nowISO8601() },
 				':isComplete': { BOOL: true },
 				':text': { S: ctx.prev.result },
+			},
+			expressionNames: {
+				'#txt': 'text',
 			},
 		},
 	}
