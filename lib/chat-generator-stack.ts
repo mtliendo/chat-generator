@@ -45,6 +45,9 @@ export class ChatGeneratorStack extends cdk.Stack {
 					FilterCriteria.filter({
 						eventName: FilterRule.isEqual('INSERT'),
 					}),
+					FilterCriteria.filter({
+						eventName: FilterRule.isEqual('MODIFY'),
+					}),
 				],
 			})
 		)
