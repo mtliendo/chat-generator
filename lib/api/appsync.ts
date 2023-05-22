@@ -54,7 +54,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 	)
 
 	const allowSSMAccess = new PolicyStatement({
-		actions: ['ssm:GetParameters'],
+		actions: ['ssm:GetParameter'],
 		resources: [
 			`arn:aws:ssm:us-east-1:${process.env.CDK_DEFAULT_ACCOUNT}:parameter/OPENAI_SECRET`,
 		],

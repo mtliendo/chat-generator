@@ -352,4 +352,8 @@ parameterStoreDataSource.grantPrincipal.addToPrincipalPolicy(allowSSMAccess)
 
 ooof, deployed and tested, got the same error. Just noticed CodeWhisperer put `OPENAI_KEY` instead of `OPENAI_SECRET`.
 
+Trying again. Failed.
+
+Ahh...codewhisperer again. Just noticed it put `GetParameters` instead of `GetParameter`.
+
 Trying again.
