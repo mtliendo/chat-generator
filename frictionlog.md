@@ -298,3 +298,33 @@ Deploy: Adding my deploy scripts:
 ````
 
 I forgot to update my `bin` directory. Kinda worked out since I also forgot to update the `publishToAppSyncFunc` name as well.
+
+Deployed just fine (I'm getting good at this lol).
+
+Now time to create a user and list the stories.
+-- Worked on the first try
+
+Now the scary part. Gonna try and create a story from ChatGPT.
+Oh, before I do that, I better save a secret in parameter store!
+
+I did this from the console.
+
+I went to create a story:
+-- It broke on the parameter store part.
+-- the story is created in DDB with isComplete set to false.
+-- Cloudwatch says I'm missing auth token. I've ran into this before. The docs don't mention it anywhere relevant (they 100% should), but I need to sign the request.
+
+With the help of chatGPT, I found the signing service name and added the object to the datasource:
+
+```ts
+const parameterStoreDataSource = api.addHttpDataSource(
+	'parameterStoreDataSource',
+	'https://ssm.us-east-1.amazonaws.com',
+	{
+		authorizationConfig: {
+			signingRegion: process.env.CDK_DEFAULT_REGION!,
+			signingServiceName: 'ssm',
+		},
+	}
+)
+```

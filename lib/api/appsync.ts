@@ -44,7 +44,13 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 
 	const parameterStoreDataSource = api.addHttpDataSource(
 		'parameterStoreDataSource',
-		'https://ssm.us-east-1.amazonaws.com'
+		'https://ssm.us-east-1.amazonaws.com',
+		{
+			authorizationConfig: {
+				signingRegion: process.env.CDK_DEFAULT_REGION!,
+				signingServiceName: 'ssm',
+			},
+		}
 	)
 	const openAIDataSource = api.addHttpDataSource(
 		'openAIDataSource',
