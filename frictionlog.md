@@ -359,3 +359,7 @@ Ahh...codewhisperer again. Just noticed it put `GetParameters` instead of `GetPa
 Trying again. It worked!...Kinda.
 
 It timed out. I'm gonna have it write a shorter story.
+
+Got it working by switching to davinci model. This consistently allows stories through but it's still close to the 30 second limit.
+
+Other thing I changed was allowing "MODIFY" stream updates. This lets subscriptions get triggered when values are updated.
