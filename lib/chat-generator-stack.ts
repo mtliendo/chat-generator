@@ -35,6 +35,7 @@ export class ChatGeneratorStack extends cdk.Stack {
 		const publishToAppSyncFunc = createPublishToAppSyncFunc(this, {
 			appSyncARN: appsyncAPI.arn,
 			appSyncURL: appsyncAPI.graphqlUrl,
+			appName: 'AIStory',
 		})
 
 		publishToAppSyncFunc.addEventSource(

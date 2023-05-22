@@ -6,6 +6,7 @@ import path = require('path')
 type publishToAppSyncProps = {
 	appSyncARN: string
 	appSyncURL: string
+	appName: string
 }
 
 export const createPublishToAppSyncFunc = (
@@ -14,9 +15,9 @@ export const createPublishToAppSyncFunc = (
 ) => {
 	const publishToAppSyncFunc = new NodejsFunction(
 		scope,
-		'publishToAppSyncFunc',
+		`${props.appName}publishToAppSyncFunc`,
 		{
-			functionName: `publishToAppSyncFunc`,
+			functionName: `${props.appName}publishToAppSyncFunc`,
 			runtime: Runtime.NODEJS_16_X,
 			handler: 'handler',
 			entry: path.join(__dirname, `./main.ts`),

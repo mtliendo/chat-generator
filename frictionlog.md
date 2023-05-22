@@ -296,3 +296,5 @@ Deploy: Adding my deploy scripts:
 		"deploy": " npm run build:appsyncFunctions && npx aws-cdk deploy",
     ```
 ````
+
+I forgot to update my `bin` directory. Kinda worked out since I also forgot to update the `publishToAppSyncFunc` name as well.
