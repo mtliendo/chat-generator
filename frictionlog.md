@@ -328,3 +328,28 @@ const parameterStoreDataSource = api.addHttpDataSource(
 	}
 )
 ```
+
+Another error but closer:
+
+```js
+"body": "{\"__type\":\"AccessDeniedException\",\"Message\":\"User: arn:aws:sts::311853295989:assumed-role/ChatGeneratorStack-createAIStoryAPIparameterStoreD-UDIK73785HSH/APPSYNC_ASSUME_ROLE is not authorized to perform: ssm:GetParameter on resource: arn:aws:ssm:us-east-1:311853295989:parameter/OPENAI_SECRET because no identity-based policy allows the ssm:GetParameter action\"}"
+```
+
+Essentially, I need to give my datasource access to perform the ssm:GetParameter action. Simple enough.
+
+Oh--CodeWhisperer actually wrote it for me!
+
+```ts
+const allowSSMAccess = new PolicyStatement({
+	actions: ['ssm:GetParameters'],
+	resources: [
+		`arn:aws:ssm:us-east-1:${process.env.CDK_DEFAULT_ACCOUNT}:parameter/OPENAI_KEY`,
+	],
+})
+
+parameterStoreDataSource.grantPrincipal.addToPrincipalPolicy(allowSSMAccess)
+```
+
+ooof, deployed and tested, got the same error. Just noticed CodeWhisperer put `OPENAI_KEY` instead of `OPENAI_SECRET`.
+
+Trying again.

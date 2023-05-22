@@ -3,7 +3,7 @@ import * as awsAppsync from 'aws-cdk-lib/aws-appsync'
 import * as path from 'path'
 import { UserPool } from 'aws-cdk-lib/aws-cognito'
 import { Table } from 'aws-cdk-lib/aws-dynamodb'
-import { IRole } from 'aws-cdk-lib/aws-iam'
+import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 
 type AppSyncAPIProps = {
 	appName: string
@@ -52,6 +52,16 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 			},
 		}
 	)
+
+	const allowSSMAccess = new PolicyStatement({
+		actions: ['ssm:GetParameters'],
+		resources: [
+			`arn:aws:ssm:us-east-1:${process.env.CDK_DEFAULT_ACCOUNT}:parameter/OPENAI_SECRET`,
+		],
+	})
+
+	parameterStoreDataSource.grantPrincipal.addToPrincipalPolicy(allowSSMAccess)
+
 	const openAIDataSource = api.addHttpDataSource(
 		'openAIDataSource',
 		'https://api.openai.com'
